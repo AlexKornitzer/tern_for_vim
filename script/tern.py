@@ -24,6 +24,20 @@ def tern_displayError(err):
   print(str(err))
 
 def tern_makeRequest(port, doc, silent=False):
+  # XXX: Hackily strip vue files to just the script bit
+  for f in doc['files']:
+    if f['name'].endswith('.vue'):
+        lines = f['text'].split('\n')
+        found = False
+        for index, line in enumerate(lines):
+            if not found:
+                lines[index] = ""
+            if line == '<script>':
+                found = True
+            elif line == '</script>':
+                found = False
+        f['text'] = '\n'.join(lines)
+
   payload = json.dumps(doc)
   if not PY2:
     payload = payload.encode('utf-8')
